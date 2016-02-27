@@ -7,7 +7,7 @@ php's date function is pretty nice for formatting dates. since a lot of php deve
 
 #### install
 
-```javascript
+```
 npm install --save phpdate
 ```
 
