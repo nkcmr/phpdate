@@ -120,11 +120,36 @@
       return pad(date.getSeconds(), 2)
     },
     u: function (date) {
-      return String(date.getTime()).slice(-3)
+      return pad(date.getMilliseconds(), 3)
+    },
+    U: function (date) {
+      return String(Math.floor(date.getTime() / 1000))
+    },
+    P: function (date) {
+      var offset_minutes = date.getTimezoneOffset()
+      var sign = offset_minutes < 0 ? '-' : '+'
+      offset_minutes = Math.abs(offset_minutes)
+      var hours = Math.floor(offset_minutes / 60)
+      var minutes = offset_minutes % 60
+      return sign + ([pad(hours, 2), pad(minutes, 2)].join(':'))
+    },
+    O: function (date) {
+      var offset_minutes = date.getTimezoneOffset()
+      var sign = offset_minutes < 0 ? '-' : '+'
+      offset_minutes = Math.abs(offset_minutes)
+      var hours = Math.floor(offset_minutes / 60)
+      var minutes = offset_minutes % 60
+      return [sign, pad(hours, 2), pad(minutes, 2)].join('')
+    },
+    c: function (_date) {
+      return date('Y-m-d\TH:i:sP', _date)
+    },
+    r: function (_date) {
+      return date('D, j M Y H:i:s O', _date)
     }
   }
 
-  return function date (format, time) {
+  function date (format, time) {
     var specimen, idx, char, replacement, head, tail
     if (!time) {
       time = new Date()
@@ -149,4 +174,5 @@
     }
     return specimen.join('')
   }
+  return date
 })
