@@ -1,4 +1,5 @@
-### phpdate
+## phpdate [![Build Status](https://travis-ci.org/nkcmr/phpdate.svg?branch=master)](https://travis-ci.org/nkcmr/phpdate) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+
 [date](https://secure.php.net/manual/en/function.date.php) ported to javascript. 
 
 #### why
