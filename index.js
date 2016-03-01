@@ -145,7 +145,7 @@
       return date('Y-m-d\TH:i:sP', _date)
     },
     r: function (_date) {
-      return date('D, j M Y H:i:s O', _date)
+      return date('D, d M Y H:i:s O', _date)
     }
   }
 
