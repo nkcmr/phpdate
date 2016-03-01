@@ -59,7 +59,7 @@
     },
     z: function (date) {
       var start = new Date(date.getFullYear(), 0, 1)
-      return Math.floor((date - start) / (1000 * 60 * 60 * 24))
+      return String(Math.floor((date - start) / (1000 * 60 * 60 * 24)))
     },
     F: function (date) {
       return long_months[date.getMonth()]
