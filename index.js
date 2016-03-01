@@ -84,7 +84,7 @@
       if (date.getMonth() === 1) {
         return this.L(date) === '1' ? '29' : '28'
       }
-      if ([0, 2, 4, 6, 7, 9, 11].indexOf(date.getMonth())) {
+      if ([0, 2, 4, 6, 7, 9, 11].indexOf(date.getMonth()) !== -1) {
         return '31'
       }
       return '30'
