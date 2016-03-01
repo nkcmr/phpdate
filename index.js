@@ -160,6 +160,7 @@
         head = specimen.slice(0, idx - 1)
         tail = specimen.slice(idx)
         specimen = head.concat(tail)
+        idx -= 1
         continue
       }
       char = specimen[idx]
