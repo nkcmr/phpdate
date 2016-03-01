@@ -93,7 +93,7 @@
       return String(date.getFullYear())
     },
     y: function (date) {
-      return String(date.getFullYear()).slice(2)
+      return this.Y(date).slice(-2)
     },
     a: function (date) {
       return date.getHours() < 12 ? 'am' : 'pm'
