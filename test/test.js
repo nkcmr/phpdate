@@ -4,8 +4,6 @@
 var date = require('../')
 var assert = require('assert')
 
-process.env.TZ = 'UTC'
-
 describe('date', function () {
   var test_date
   beforeEach(function () {
