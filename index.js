@@ -18,13 +18,13 @@
     return s
   }
 
-  var short_days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  var long_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-  var iso_8601_numeric_day = ['7', '1', '2', '3', '4', '5', '6']
+  var shortDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  var longDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  var iso8601NumericDay = ['7', '1', '2', '3', '4', '5', '6']
 
-  var long_months = ['January', 'February', 'March', 'April', 'May', 'June',
+  var longMonths = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December']
-  var short_months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  var shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
   var tokens = {
     d: function (date) {
@@ -34,13 +34,13 @@
       return String(date.getDate())
     },
     D: function (date) {
-      return short_days[date.getDay()]
+      return shortDays[date.getDay()]
     },
     l: function (date) {
-      return long_days[date.getDay()]
+      return longDays[date.getDay()]
     },
     N: function (date) {
-      return iso_8601_numeric_day[date.getDay()]
+      return iso8601NumericDay[date.getDay()]
     },
     S: function (date) {
       if ([1, 21, 31].indexOf(date.getDate()) !== -1) {
@@ -62,13 +62,13 @@
       return String(Math.floor((date - start) / (1000 * 60 * 60 * 24)))
     },
     F: function (date) {
-      return long_months[date.getMonth()]
+      return longMonths[date.getMonth()]
     },
     m: function (date) {
       return pad(date.getMonth() + 1, 2)
     },
     M: function (date) {
-      return short_months[date.getMonth()]
+      return shortMonths[date.getMonth()]
     },
     n: function (date) {
       return String(date.getMonth() + 1)
@@ -126,23 +126,23 @@
       return String(Math.floor(date.getTime() / 1000))
     },
     P: function (date) {
-      var offset_minutes = date.getTimezoneOffset()
-      var sign = offset_minutes < 0 ? '-' : '+'
-      offset_minutes = Math.abs(offset_minutes)
-      var hours = Math.floor(offset_minutes / 60)
-      var minutes = offset_minutes % 60
+      var offsetMinutes = date.getTimezoneOffset()
+      var sign = offsetMinutes < 0 ? '-' : '+'
+      offsetMinutes = Math.abs(offsetMinutes)
+      var hours = Math.floor(offsetMinutes / 60)
+      var minutes = offsetMinutes % 60
       return sign + ([pad(hours, 2), pad(minutes, 2)].join(':'))
     },
     O: function (date) {
-      var offset_minutes = date.getTimezoneOffset()
-      var sign = offset_minutes < 0 ? '-' : '+'
-      offset_minutes = Math.abs(offset_minutes)
-      var hours = Math.floor(offset_minutes / 60)
-      var minutes = offset_minutes % 60
+      var offsetMinutes = date.getTimezoneOffset()
+      var sign = offsetMinutes < 0 ? '-' : '+'
+      offsetMinutes = Math.abs(offsetMinutes)
+      var hours = Math.floor(offsetMinutes / 60)
+      var minutes = offsetMinutes % 60
       return [sign, pad(hours, 2), pad(minutes, 2)].join('')
     },
     c: function (_date) {
-      return date('Y-m-d\TH:i:sP', _date)
+      return date('Y-m-dTH:i:sP', _date)
     },
     r: function (_date) {
       return date('D, d M Y H:i:s O', _date)

@@ -4,7 +4,7 @@
   "description": "php's date function ported to javascript",
   "main": "index.js",
   "scripts": {
-    "test": "TZ=UTC standard && mocha"
+    "test": "standard && mocha"
   },
   "repository": {
     "type": "git",
