@@ -5,6 +5,23 @@ process.env.TZ = 'UTC'
 
 var date = require('../')
 var assert = require('assert')
+var vocGerman = require('../i18n/de_DE')
+
+function verifyDayNames (testDate, fmtFunc, fmtSpec, dayNames) {
+  assert.equal(fmtFunc(fmtSpec, testDate), dayNames[4])
+  testDate.setMonth(0, 31)
+  assert.equal(fmtFunc(fmtSpec, testDate), dayNames[0])
+  testDate.setMonth(1, 1)
+  assert.equal(fmtFunc(fmtSpec, testDate), dayNames[1])
+  testDate.setDate(2)
+  assert.equal(fmtFunc(fmtSpec, testDate), dayNames[2])
+  testDate.setDate(3)
+  assert.equal(fmtFunc(fmtSpec, testDate), dayNames[3])
+  testDate.setDate(5)
+  assert.equal(fmtFunc(fmtSpec, testDate), dayNames[5])
+  testDate.setDate(6)
+  assert.equal(fmtFunc(fmtSpec, testDate), dayNames[6])
+}
 
 describe('date', function () {
   var testDate
@@ -23,36 +40,15 @@ describe('date', function () {
   })
   describe('D', function () {
     it('should format date to short day name', function () {
-      assert.equal(date('D', testDate), 'Thu')
-      testDate.setMonth(0, 31)
-      assert.equal(date('D', testDate), 'Sun')
-      testDate.setMonth(1, 1)
-      assert.equal(date('D', testDate), 'Mon')
-      testDate.setDate(2)
-      assert.equal(date('D', testDate), 'Tue')
-      testDate.setDate(3)
-      assert.equal(date('D', testDate), 'Wed')
-      testDate.setDate(5)
-      assert.equal(date('D', testDate), 'Fri')
-      testDate.setDate(6)
-      assert.equal(date('D', testDate), 'Sat')
+      verifyDayNames(testDate, date, 'D',
+        [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ])
     })
   })
   describe('l', function () {
     it('should format date to long day name', function () {
-      assert.equal(date('l', testDate), 'Thursday')
-      testDate.setMonth(0, 31)
-      assert.equal(date('l', testDate), 'Sunday')
-      testDate.setMonth(1, 1)
-      assert.equal(date('l', testDate), 'Monday')
-      testDate.setDate(2)
-      assert.equal(date('l', testDate), 'Tuesday')
-      testDate.setDate(3)
-      assert.equal(date('l', testDate), 'Wednesday')
-      testDate.setDate(5)
-      assert.equal(date('l', testDate), 'Friday')
-      testDate.setDate(6)
-      assert.equal(date('l', testDate), 'Saturday')
+      verifyDayNames(testDate, date, 'l',
+        [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+          'Friday', 'Saturday' ])
     })
   })
   describe('N', function () {
@@ -364,6 +360,18 @@ describe('date', function () {
     it('should skip over letters that are prefixed with a slash (\\)', function () {
       assert.equal(date('\\rc', testDate), 'r2016-02-04T03:24:05+00:00')
       assert.equal(date('Y-\\m-d H:\\i:s', testDate), '2016-m-04 03:i:05')
+    })
+  })
+  describe('[voc=de_DE] D', function () {
+    it('should format date to german day name abbreviations', function () {
+      verifyDayNames(testDate, date.voc(vocGerman), 'D',
+        vocGerman.dayNameAbbrevs)
+    })
+  })
+  describe('[voc=de_DE] l', function () {
+    it('should format date to full german day names', function () {
+      verifyDayNames(testDate, date.voc(vocGerman), 'l',
+        vocGerman.dayNames)
     })
   })
 })

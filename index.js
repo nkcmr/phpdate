@@ -7,25 +7,36 @@
   } else {
     global.date = factory()
   }
-})(this, function () {
+})(this, (function (makeDateFormatFunc) {
+  'use strict'
+  var american = makeDateFormatFunc(false)
+  american.voc = makeDateFormatFunc
+  return function () { return american }
+}(function (voc) {
   'use strict'
 
   var ESCAPE_CHAR = '\\'
   var millisecondsPerDay = 24 * 60 * 60 * 1000
 
-  var shortDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  var longDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  var shortDays = (voc.dayNameAbbrevs ||
+    [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ])
+  var longDays = (voc.dayNames ||
+    [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
+      'Saturday'])
   var iso8601NumericDay = ['7', '1', '2', '3', '4', '5', '6']
 
-  var longMonths = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December']
-  var shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  var longMonths = (voc.monthNames ||
+    [ 'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December' ])
+  var shortMonths = (voc.monthNameAbbrevs ||
+    [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+      'Oct', 'Nov', 'Dec'])
 
-  var numberSuffix = (function (sufs) {
+  var numberSuffix = (voc.numberSuffix || (function (sufs) {
     return function (date) {
       return (sufs[date.getDate() % 10] || 'th')
     }
-  }(['th', 'st', 'nd', 'rd']))
+  }(['th', 'st', 'nd', 'rd'])))
 
   var tokens = {
     d: function (date) {
@@ -171,4 +182,4 @@
     return specimen.join('')
   }
   return date
-})
+})))
