@@ -11,12 +11,7 @@
   'use strict'
 
   var ESCAPE_CHAR = '\\'
-
-  function pad (num, size) {
-    var s = num + ''
-    while (s.length < size) s = '0' + s
-    return s
-  }
+  var millisecondsPerDay = 24 * 60 * 60 * 1000
 
   var shortDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   var longDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -26,9 +21,15 @@
     'July', 'August', 'September', 'October', 'November', 'December']
   var shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+  var numberSuffix = (function (sufs) {
+    return function (date) {
+      return (sufs[date.getDate() % 10] || 'th')
+    }
+  }(['th', 'st', 'nd', 'rd']))
+
   var tokens = {
     d: function (date) {
-      return pad(date.getDate(), 2)
+      return String(100 + date.getDate()).slice(1)
     },
     j: function (date) {
       return String(date.getDate())
@@ -42,30 +43,19 @@
     N: function (date) {
       return iso8601NumericDay[date.getDay()]
     },
-    S: function (date) {
-      if ([1, 21, 31].indexOf(date.getDate()) !== -1) {
-        return 'st'
-      }
-      if ([2, 22].indexOf(date.getDate()) !== -1) {
-        return 'nd'
-      }
-      if ([3, 23].indexOf(date.getDate()) !== -1) {
-        return 'rd'
-      }
-      return 'th'
-    },
+    S: numberSuffix,        // locale-dependent!
     w: function (date) {
       return String(date.getDay())
     },
     z: function (date) {
-      var start = new Date(date.getFullYear(), 0, 1)
-      return String(Math.floor((date - start) / (1000 * 60 * 60 * 24)))
+      var start = (new Date(date.getFullYear(), 0, 1)).getTime()
+      return String(Math.floor((date.getTime() - start) / millisecondsPerDay))
     },
     F: function (date) {
       return longMonths[date.getMonth()]
     },
     m: function (date) {
-      return pad(date.getMonth() + 1, 2)
+      return String(date.getMonth() + 101).slice(1)
     },
     M: function (date) {
       return shortMonths[date.getMonth()]
@@ -93,7 +83,10 @@
       return String(date.getFullYear())
     },
     y: function (date) {
-      return this.Y(date).slice(-2)
+      return String(date.getFullYear()).substr(2, 2)
+      // Using the exact positions will give a little performance boost for
+      // the next few thousand years, at the cost of a little maintainance
+      // effort in the far future. (Writing this @ 2017-02-24)
     },
     a: function (date) {
       return date.getHours() < 12 ? 'am' : 'pm'
@@ -108,19 +101,20 @@
       return String(date.getHours())
     },
     h: function (date) {
-      return pad(this.g(date), 2)
+      var h = this.g(date)
+      return (h.length === 2 ? h : '0' + h)
     },
     H: function (date) {
-      return pad(this.G(date), 2)
+      return String(100 + date.getHours()).slice(1)
     },
     i: function (date) {
-      return pad(date.getMinutes(), 2)
+      return String(100 + date.getMinutes()).slice(1)
     },
     s: function (date) {
-      return pad(date.getSeconds(), 2)
+      return String(100 + date.getSeconds()).slice(1)
     },
     u: function (date) {
-      return pad(date.getMilliseconds(), 3)
+      return String(1000 + date.getMilliseconds()).slice(1)
     },
     U: function (date) {
       return String(Math.floor(date.getTime() / 1000))
@@ -131,7 +125,8 @@
       offsetMinutes = Math.abs(offsetMinutes)
       var hours = Math.floor(offsetMinutes / 60)
       var minutes = offsetMinutes % 60
-      return sign + ([pad(hours, 2), pad(minutes, 2)].join(':'))
+      return sign + String(100 + hours).slice(1) + ':' +
+        String(100 + minutes).slice(1)
     },
     O: function (date) {
       var offsetMinutes = date.getTimezoneOffset()
@@ -139,7 +134,7 @@
       offsetMinutes = Math.abs(offsetMinutes)
       var hours = Math.floor(offsetMinutes / 60)
       var minutes = offsetMinutes % 60
-      return [sign, pad(hours, 2), pad(minutes, 2)].join('')
+      return sign + String(10000 + (100 * hours) + minutes).slice(1)
     },
     c: function (_date) {
       return date('Y-m-dTH:i:sP', _date)
