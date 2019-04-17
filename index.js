@@ -5,7 +5,7 @@
   } else if (typeof module === 'object' && module.exports) {
     module.exports = factory()
   } else {
-    global.date = factory()
+    Object.assign(global, factory())
   }
 })(this, function () {
   'use strict'
@@ -22,105 +22,108 @@
   var shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
   var numberSuffix = (function (sufs) {
-    return function (date) {
-      return (sufs[date.getDate() % 10] || 'th')
+    return function (date, utc) {
+      return (sufs[utc ? date.getUTCDate() : date.getDate() % 10] || 'th')
     }
   }(['th', 'st', 'nd', 'rd']))
 
+  /**
+   * @type {{[t: string]: (date: Date, utc: boolean)}}
+   */
   var tokens = {
-    d: function (date) {
-      return String(100 + date.getDate()).slice(1)
+    d: function (date, utc) {
+      return String(100 + (utc ? date.getUTCDate() : date.getDate())).slice(1)
     },
-    j: function (date) {
-      return String(date.getDate())
+    j: function (date, utc) {
+      return String(utc ? date.getUTCDate() : date.getDate())
     },
-    D: function (date) {
-      return shortDays[date.getDay()]
+    D: function (date, utc) {
+      return shortDays[utc ? date.getUTCDay() : date.getDay()]
     },
-    l: function (date) {
-      return longDays[date.getDay()]
+    l: function (date, utc) {
+      return longDays[utc ? date.getUTCDay() : date.getDay()]
     },
-    N: function (date) {
-      return iso8601NumericDay[date.getDay()]
+    N: function (date, utc) {
+      return iso8601NumericDay[utc ? date.getUTCDay() : date.getDay()]
     },
-    S: numberSuffix,        // locale-dependent!
-    w: function (date) {
-      return String(date.getDay())
+    S: numberSuffix, // locale-dependent!
+    w: function (date, utc) {
+      return String(utc ? date.getUTCDay() : date.getDay())
     },
-    z: function (date) {
-      var start = (new Date(date.getFullYear(), 0, 1)).getTime()
+    z: function (date, utc) {
+      var start = (new Date(utc ? date.getUTCFullYear() : date.getFullYear(), 0, 1)).getTime()
       return String(Math.floor((date.getTime() - start) / millisecondsPerDay))
     },
-    F: function (date) {
-      return longMonths[date.getMonth()]
+    F: function (date, utc) {
+      return longMonths[utc ? date.getUTCMonth() : date.getMonth()]
     },
-    m: function (date) {
-      return String(date.getMonth() + 101).slice(1)
+    m: function (date, utc) {
+      return String((utc ? date.getUTCMonth() : date.getMonth()) + 101).slice(1)
     },
-    M: function (date) {
-      return shortMonths[date.getMonth()]
+    M: function (date, utc) {
+      return shortMonths[utc ? date.getUTCMonth() : date.getMonth()]
     },
-    n: function (date) {
-      return String(date.getMonth() + 1)
+    n: function (date, utc) {
+      return String((utc ? date.getUTCMonth() : date.getMonth()) + 1)
     },
-    L: function (date) {
-      var year = date.getFullYear()
+    L: function (date, utc) {
+      var year = utc ? date.getUTCFullYear() : date.getFullYear()
       if (((year % 4) === 0 && (year % 100) !== 0) || (year % 400) === 0) {
         return '1'
       }
       return '0'
     },
-    t: function (date) {
-      if (date.getMonth() === 1) {
-        return this.L(date) === '1' ? '29' : '28'
+    t: function (date, utc) {
+      if ((utc ? date.getUTCMonth() : date.getMonth()) === 1) {
+        return this.L(date, utc) === '1' ? '29' : '28'
       }
-      if ([0, 2, 4, 6, 7, 9, 11].indexOf(date.getMonth()) !== -1) {
+      if ([0, 2, 4, 6, 7, 9, 11].indexOf((utc ? date.getUTCMonth() : date.getMonth())) !== -1) {
         return '31'
       }
       return '30'
     },
-    Y: function (date) {
-      return String(date.getFullYear())
+    Y: function (date, utc) {
+      return String(utc ? date.getUTCFullYear() : date.getFullYear())
     },
-    y: function (date) {
-      return String(date.getFullYear()).substr(2, 2)
+    y: function (date, utc) {
+      return String(utc ? date.getUTCFullYear() : date.getFullYear()).substr(2, 2)
       // Using the exact positions will give a little performance boost for
       // the next few thousand years, at the cost of a little maintainance
       // effort in the far future. (Writing this @ 2017-02-24)
     },
-    a: function (date) {
-      return date.getHours() < 12 ? 'am' : 'pm'
+    a: function (date, utc) {
+      return (utc ? date.getUTCHours() : date.getHours()) < 12 ? 'am' : 'pm'
     },
-    A: function (date) {
-      return this.a(date).toUpperCase()
+    A: function (date, utc) {
+      return this.a(date, utc).toUpperCase()
     },
-    g: function (date) {
-      return String(date.getHours() % 12 || 12)
+    g: function (date, utc) {
+      return String((utc ? date.getUTCHours() : date.getHours()) % 12 || 12)
     },
-    G: function (date) {
-      return String(date.getHours())
+    G: function (date, utc) {
+      return String(utc ? date.getUTCHours() : date.getHours())
     },
-    h: function (date) {
-      var h = this.g(date)
+    h: function (date, utc) {
+      var h = this.g(date, utc)
       return (h.length === 2 ? h : '0' + h)
     },
-    H: function (date) {
-      return String(100 + date.getHours()).slice(1)
+    H: function (date, utc) {
+      return String(100 + (utc ? date.getUTCHours() : date.getHours())).slice(1)
     },
-    i: function (date) {
-      return String(100 + date.getMinutes()).slice(1)
+    i: function (date, utc) {
+      return String(100 + (utc ? date.getUTCMinutes() : date.getMinutes())).slice(1)
     },
-    s: function (date) {
-      return String(100 + date.getSeconds()).slice(1)
+    s: function (date, utc) {
+      return String(100 + (utc ? date.getUTCSeconds() : date.getSeconds())).slice(1)
     },
-    u: function (date) {
-      return String(1000 + date.getMilliseconds()).slice(1)
+    u: function (date, utc) {
+      return String(1000 + (utc ? date.getUTCMilliseconds() : date.getMilliseconds())).slice(1)
     },
     U: function (date) {
-      return String(Math.floor(date.getTime() / 1000))
+      return String(Math.floor((date.getTime()) / 1000))
     },
-    P: function (date) {
-      var offsetMinutes = date.getTimezoneOffset()
+    P: function (date, utc) {
+      var offsetMinutes = utc ? 0 : date.getTimezoneOffset()
       var sign = offsetMinutes < 0 ? '-' : '+'
       offsetMinutes = Math.abs(offsetMinutes)
       var hours = Math.floor(offsetMinutes / 60)
@@ -128,47 +131,64 @@
       return sign + String(100 + hours).slice(1) + ':' +
         String(100 + minutes).slice(1)
     },
-    O: function (date) {
-      var offsetMinutes = date.getTimezoneOffset()
+    O: function (date, utc) {
+      var offsetMinutes = utc ? 0 : date.getTimezoneOffset()
       var sign = offsetMinutes < 0 ? '-' : '+'
       offsetMinutes = Math.abs(offsetMinutes)
       var hours = Math.floor(offsetMinutes / 60)
       var minutes = offsetMinutes % 60
       return sign + String(10000 + (100 * hours) + minutes).slice(1)
     },
-    c: function (_date) {
-      return date('Y-m-dTH:i:sP', _date)
+    c: function (_date, utc) {
+      return (utc ? gmdate : date)('Y-m-dTH:i:sP', _date)
     },
-    r: function (_date) {
-      return date('D, d M Y H:i:s O', _date)
+    r: function (_date, utc) {
+      return (utc ? gmdate : date)('D, d M Y H:i:s O', _date)
     }
   }
 
-  function date (format, time) {
-    var specimen, idx, char, replacement, head, tail
-    if (!time) {
-      time = new Date()
-    }
-    specimen = format.split('')
-    for (idx = 0; idx < specimen.length; idx++) {
-      if (idx > 0 && specimen[Math.max(0, idx - 1)] === ESCAPE_CHAR) {
-        head = specimen.slice(0, idx - 1)
-        tail = specimen.slice(idx)
-        specimen = head.concat(tail)
-        idx -= 1
-        continue
+  /**
+   * @param {boolean} utc
+   */
+  function dateFnFactory (utc) {
+    /**
+     * @param {string} format
+     * @param {Date | undefined} time
+     */
+    function date (format, time) {
+      var specimen, idx, char, replacement, head, tail
+      if (!time) {
+        time = new Date()
       }
-      char = specimen[idx]
-      if (!tokens[char]) {
-        continue
+      specimen = format.split('')
+      for (idx = 0; idx < specimen.length; idx++) {
+        if (idx > 0 && specimen[Math.max(0, idx - 1)] === ESCAPE_CHAR) {
+          head = specimen.slice(0, idx - 1)
+          tail = specimen.slice(idx)
+          specimen = head.concat(tail)
+          idx -= 1
+          continue
+        }
+        char = specimen[idx]
+        if (!tokens[char]) {
+          continue
+        }
+        replacement = tokens[char](time, utc).split('')
+        head = specimen.slice(0, idx)
+        tail = specimen.slice(idx + 1)
+        specimen = head.concat(replacement, tail)
+        idx += (replacement.length - 1)
       }
-      replacement = tokens[char](time).split('')
-      head = specimen.slice(0, idx)
-      tail = specimen.slice(idx + 1)
-      specimen = head.concat(replacement, tail)
-      idx += (replacement.length - 1)
+      return specimen.join('')
     }
-    return specimen.join('')
+    return date
   }
-  return date
+
+  var gmdate = dateFnFactory(true)
+  var date = dateFnFactory(false)
+
+  return {
+    date: date,
+    gmdate: gmdate
+  }
 })

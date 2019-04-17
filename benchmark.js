@@ -7,8 +7,8 @@ var date = require('.')
 
 // We need fixed dates so timing won't flicker just because there's less
 // or more string padding to do.
-var now1 = new Date(1075817162)   // 2004-02-03 15:06:02
-var now2 = new Date(1416696170)   // 2014-11-22 23:42:50
+var now1 = new Date(1075817162) // 2004-02-03 15:06:02
+var now2 = new Date(1416696170) // 2014-11-22 23:42:50
 
 function addFmt (fmt) {
   suite.add(fmt, function () {

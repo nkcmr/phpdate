@@ -15,10 +15,12 @@ npm install --save phpdate
 #### usage
 
 ```javascript
+// TZ is America/Los_Angeles (DST)
 'use strict'
-var date = require('phpdate')
+const { date, gmdate } = require('phpdate')
 
 console.log(date('Y-m-d H:i:s')) // => 2016-02-27 17:23:50
+console.log(gmdate('Y-m-d H:i:s')) // => 2016-02-28 02:23:50
 ```
 
 #### api
@@ -28,3 +30,7 @@ their are a few differences from php's implementation.
 #### date(format[, date])
 
 `format` is the output format of the date. `date` can be an instance of javascript's `Date` object. this differs from php, because php's date function takes an integer to specify the time to format.
+
+#### gmdate(format[, date])
+
+identical to `date`, but will always use UTC/GMT for the time zone
